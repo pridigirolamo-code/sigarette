@@ -108,7 +108,7 @@
         <div class="actions"><button class="secondary" id="undo">↩ Annulla l'ultima</button></div>
         <p class="message" id="message" role="status"></p>
       </section>
-      <p class="tips">Il conteggio resta sul telefono. Ogni nuovo giorno riparte da zero.<br>Versione 10</p>
+      <p class="tips">Il conteggio resta sul telefono. Ogni nuovo giorno riparte da zero.<br>Versione 11</p>
       <section class="summary" aria-live="polite">
         <h2>Riepilogo storico</h2>
         <div class="week">
@@ -137,7 +137,7 @@
         <input id="packPrice" type="number" min="0.01" max="100" step="0.01" inputmode="decimal" value="5.60" />
         <label for="packSize">Sigarette nel pacchetto</label>
         <input id="packSize" type="number" min="1" max="100" inputmode="numeric" value="20" />
-        <div class="dialog-actions"><button class="cancel" value="cancel">Annulla</button><button class="save" value="save">Salva</button></div>
+        <div class="dialog-actions"><button type="button" class="cancel" id="cancelSettings">Annulla</button><button type="submit" class="save">Salva</button></div>
         <div class="backup">
           <h3>Copia dei dati</h3>
           <p class="hint" id="backupInfo"></p>
@@ -264,7 +264,8 @@
       });
       const backupInfo = () => { $('backupInfo').textContent = state.lastBackup ? `Ultima copia salvata il ${new Date(state.lastBackup).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}.` : 'Non hai ancora salvato una copia. Se cambi telefono o cancelli i dati del browser, senza copia perdi lo storico.'; };
       $('settings').addEventListener('click', () => { $('limit').value = state.limit; $('before').value = state.before; $('pause').value = state.pause; $('packPrice').value = state.packPrice.toFixed(2); $('packSize').value = state.packSize; backupInfo(); $('dialog').showModal(); });
-      $('settingsForm').addEventListener('submit', (event) => { if (event.submitter?.value === 'save') { const value = Math.max(1, Math.min(200, Number($('limit').value) || 20)); const price = Math.max(0.01, Math.min(100, Number($('packPrice').value) || 5.60)); const size = Math.max(1, Math.min(100, Number($('packSize').value) || 20)); state.limit = value; state.before = Math.max(1, Math.min(200, Number($('before').value) || 20)); state.pause = Math.max(0, Math.min(600, Math.round(Number($('pause').value) || 0))); state.packPrice = price; state.packSize = size; $('message').textContent = ''; render(); } });
+      $('cancelSettings').addEventListener('click', () => $('dialog').close());
+      $('settingsForm').addEventListener('submit', (event) => { event.preventDefault(); { const value = Math.max(1, Math.min(200, Number($('limit').value) || 20)); const price = Math.max(0.01, Math.min(100, Number($('packPrice').value) || 5.60)); const size = Math.max(1, Math.min(100, Number($('packSize').value) || 20)); state.limit = value; state.before = Math.max(1, Math.min(200, Number($('before').value) || 20)); state.pause = Math.max(0, Math.min(600, Math.round(Number($('pause').value) || 0))); state.packPrice = price; state.packSize = size; render(); $('dialog').close(); $('message').textContent = 'Impostazioni salvate.'; } });
       $('exportData').addEventListener('click', async () => {
         state.lastBackup = Date.now(); recordToday(); save();
         const name = `limite-sigarette-copia-${today()}.json`;
