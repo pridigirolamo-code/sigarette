@@ -20,14 +20,15 @@
       .gear { border: 1px solid #334155; background: #1e293b; color: #fff; width: 42px; height: 42px; border-radius: 13px; font-size: 1.2rem; }
       .card { border: 1px solid #263449; background: linear-gradient(145deg, #18263e, #111c31); border-radius: 22px; padding: 18px 18px 14px; box-shadow: 0 16px 36px rgba(0,0,0,.2); }
       .date { margin: 3px 0 0; color: #94a3b8; font-size: .88rem; text-transform: capitalize; }
-      .count-row { display: flex; justify-content: center; align-items: center; gap: 14px; }
+      .count-row { display: flex; justify-content: center; align-items: center; gap: 28px; }
       .count { font-size: clamp(3.6rem, 19vw, 5rem); font-weight: 800; line-height: .95; letter-spacing: -.06em; }
       .count span { font-size: 1.05rem; font-weight: 500; letter-spacing: 0; color: #94a3b8; }
       .remaining { text-align: center; margin: 8px 0 12px; color: #cbd5e1; font-size: 1rem; }
       .remaining strong { color: #fbbf24; }
       .costs { margin: 10px 0 0; text-align: center; color: #94a3b8; font-size: .9rem; line-height: 1.4; }
       .costs strong { color: #fbbf24; }
-      .lungs { font-size: 2.6rem; line-height: 1; transition: filter .25s ease; }
+      .lungs { flex: none; display: grid; place-items: center; width: 86px; height: 86px; border: 1px solid #334155; border-radius: 22px; background: #0f1a2e; font-size: 3.4rem; line-height: 1; }
+      .lungs span { transition: filter .25s ease; }
       .tabs { position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; gap: 8px; padding: 8px 16px calc(8px + env(safe-area-inset-bottom)); background: rgba(15, 23, 42, .96); border-top: 1px solid #263449; backdrop-filter: blur(8px); }
       .tab { flex: 1; max-width: 244px; display: flex; flex-direction: column; align-items: center; gap: 2px; border: 0; border-radius: 12px; padding: 7px; background: transparent; color: #94a3b8; font: inherit; font-size: 1.2rem; }
       .tab span { font-size: .8rem; }
@@ -106,7 +107,7 @@
       </header>
       <section class="card" id="pageToday" aria-live="polite">
         <div class="count-row">
-          <div class="lungs" id="lungs" role="img" aria-label="Indicatore visivo dei polmoni">🫁</div>
+          <div class="lungs" role="img" aria-label="Indicatore visivo dei polmoni"><span id="lungs">🫁</span></div>
           <div class="count" id="count">0<span> / 20</span></div>
         </div>
         <p class="remaining" id="remaining">Te ne restano <strong>20</strong> per oggi</p>
@@ -127,7 +128,7 @@
         <details class="summary-card" id="monthSummary"></details>
         <details class="summary-card" id="yearSummary"></details>
         <details class="summary-card history"><summary>Ultimi giorni registrati</summary><div id="historyRows"></div></details>
-        <p class="tips">I dati restano solo sul telefono. Ogni nuovo giorno il conteggio riparte da zero.<br>Versione 12</p>
+        <p class="tips">I dati restano solo sul telefono. Ogni nuovo giorno il conteggio riparte da zero.<br>Versione 13</p>
       </section>
     </main>
     <nav class="tabs" aria-label="Sezioni">
