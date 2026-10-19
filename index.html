@@ -23,11 +23,11 @@
       .count-row { display: flex; justify-content: center; align-items: center; gap: 28px; }
       .count { font-size: clamp(3.6rem, 19vw, 5rem); font-weight: 800; line-height: .95; letter-spacing: -.06em; }
       .count span { font-size: 1.05rem; font-weight: 500; letter-spacing: 0; color: #94a3b8; }
-      .remaining { text-align: center; margin: 8px 0 12px; color: #cbd5e1; font-size: 1rem; }
+      .remaining { text-align: center; margin: 6px 0 10px; color: #cbd5e1; font-size: 1rem; }
       .remaining strong { color: #fbbf24; }
       .costs { margin: 10px 0 0; text-align: center; color: #94a3b8; font-size: .9rem; line-height: 1.4; }
       .costs strong { color: #fbbf24; }
-      .lungs { flex: none; display: grid; place-items: center; width: 86px; height: 86px; border: 1px solid #334155; border-radius: 22px; background: #0f1a2e; font-size: 3.4rem; line-height: 1; }
+      .lungs { flex: none; display: grid; place-items: center; width: 80px; height: 80px; border: 1px solid #334155; border-radius: 22px; background: #0f1a2e; font-size: 3.4rem; line-height: 1; }
       .lungs span { transition: filter .25s ease; }
       .tabs { position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; gap: 8px; padding: 8px 16px calc(8px + env(safe-area-inset-bottom)); background: rgba(15, 23, 42, .96); border-top: 1px solid #263449; backdrop-filter: blur(8px); }
       .tab { flex: 1; max-width: 244px; display: flex; flex-direction: column; align-items: center; gap: 2px; border: 0; border-radius: 12px; padding: 7px; background: transparent; color: #94a3b8; font: inherit; font-size: 1.2rem; }
@@ -39,11 +39,25 @@
       details.summary-card[open] > summary::after { transform: rotate(180deg); }
       details.summary-card > summary .brief { margin-left: auto; margin-right: 10px; font-weight: 500; color: #94a3b8; font-size: .9rem; }
       details.summary-card[open] > summary { margin-bottom: 8px; }
+      .craving-btn { border-color: #166534; color: #bbf7d0; }
+      .health { margin: 6px 0 0; text-align: center; color: #86efac; font-size: .88rem; line-height: 1.35; cursor: pointer; }
+      .plan-text { margin: 12px 0 0; color: #cbd5e1; font-size: .9rem; line-height: 1.45; }
+      .plan-text strong { color: #fbbf24; }
+      .heal-row { display: flex; gap: 10px; align-items: baseline; padding: 8px 0; border-bottom: 1px solid #263449; color: #94a3b8; font-size: .92rem; }
+      .heal-row:last-child { border-bottom: 0; }
+      .heal-row.done { color: #86efac; }
+      .heal-row.next { color: #f8fafc; }
+      .heal-row .when { margin-left: auto; white-space: nowrap; font-size: .82rem; color: #94a3b8; }
+      .craving { text-align: center; }
+      .craving .timer { margin: 10px 0 6px; font-size: 4rem; font-weight: 800; letter-spacing: -.03em; font-variant-numeric: tabular-nums; color: #86efac; }
+      .craving .tip { min-height: 4.4em; margin: 0; color: #f8fafc; font-size: 1.05rem; line-height: 1.45; }
+      .dialog-actions.column { flex-direction: column; }
+      select { width: 100%; border: 1px solid #64748b; border-radius: 12px; padding: 13px; background: #0f172a; color: #fff; font: inherit; font-size: 1rem; }
       .progress { height: 13px; background: #0b1222; border-radius: 99px; overflow: hidden; }
       .bar { height: 100%; width: 0; border-radius: inherit; background: #fbbf24; transition: width .25s ease, background .25s ease; }
       .bar.warning { background: #fb923c; }
       .bar.over { background: #f87171; }
-      .add { display: block; width: 100%; margin-top: 14px; border: 0; border-radius: 18px; padding: 17px; background: #fbbf24; color: #111827; font: inherit; font-size: 1.25rem; font-weight: 800; box-shadow: 0 7px 0 #b77908; transform: translateY(0); }
+      .add { display: block; width: 100%; margin-top: 12px; border: 0; border-radius: 18px; padding: 17px; background: #fbbf24; color: #111827; font: inherit; font-size: 1.25rem; font-weight: 800; box-shadow: 0 7px 0 #b77908; transform: translateY(0); }
       .add:active { transform: translateY(4px); box-shadow: 0 3px 0 #b77908; }
       .actions { display: flex; gap: 10px; margin-top: 12px; }
       .secondary { flex: 1; border: 1px solid #475569; background: #1e293b; color: #f8fafc; border-radius: 14px; padding: 10px; font: inherit; }
@@ -114,8 +128,9 @@
         <div class="progress" aria-label="Progresso giornaliero"><div class="bar" id="bar"></div></div>
         <p class="costs" id="costs"></p>
         <p class="last" id="last"></p>
+        <p class="health" id="health" role="button" tabindex="0" hidden></p>
         <button class="add" id="add">+ Ho fumato una sigaretta</button>
-        <div class="actions"><button class="secondary" id="undo">↩ Annulla l'ultima</button></div>
+        <div class="actions"><button class="secondary" id="undo" aria-label="Annulla l'ultima sigaretta">↩ Annulla</button><button class="secondary craving-btn" id="craving">💪 Ho voglia</button></div>
         <p class="message" id="message" role="status"></p>
       </section>
       <section class="summary" id="pageHistory" hidden aria-live="polite">
@@ -124,11 +139,17 @@
           <p id="weekText"></p>
           <div class="chart" id="chart"></div>
           <div class="days" id="chartDays"></div>
+          <p class="plan-text" id="planText" hidden></p>
         </div>
+        <details class="summary-card" id="healDetails">
+          <summary>🌱 Il corpo che guarisce<span class="brief" id="healBrief"></span></summary>
+          <p class="hint">Cosa recupera il corpo dopo l'ultima sigaretta. Tempi indicativi dell'Organizzazione Mondiale della Sanità.</p>
+          <div id="healRows"></div>
+        </details>
         <details class="summary-card" id="monthSummary"></details>
         <details class="summary-card" id="yearSummary"></details>
         <details class="summary-card history"><summary>Ultimi giorni registrati</summary><div id="historyRows"></div></details>
-        <p class="tips">I dati restano solo sul telefono. Ogni nuovo giorno il conteggio riparte da zero.<br>Versione 13</p>
+        <p class="tips">I dati restano solo sul telefono. Ogni nuovo giorno il conteggio riparte da zero.<br>Versione 14</p>
       </section>
     </main>
     <nav class="tabs" aria-label="Sezioni">
@@ -139,7 +160,15 @@
       <form method="dialog" id="settingsForm">
         <h2>Impostazioni</h2>
         <label for="limit">Limite giornaliero</label>
-        <input id="limit" type="number" min="1" max="200" inputmode="numeric" value="20" />
+        <input id="limit" type="number" min="0" max="200" inputmode="numeric" value="20" />
+        <label for="plan">Piano per smettere</label>
+        <select id="plan">
+          <option value="0">Nessun piano (limite fisso)</option>
+          <option value="3">Scendi di 1 ogni 3 giorni</option>
+          <option value="7">Scendi di 1 ogni settimana</option>
+          <option value="14">Scendi di 1 ogni 2 settimane</option>
+        </select>
+        <p class="hint" id="planHint"></p>
         <label for="before">Quante ne fumavi prima, al giorno</label>
         <input id="before" type="number" min="1" max="200" inputmode="numeric" value="20" />
         <p class="hint">Serve per calcolare quanto risparmi rispetto a prima.</p>
@@ -162,6 +191,16 @@
         </div>
       </form>
     </dialog>
+    <dialog id="cravingDialog" class="craving">
+      <h2>Resisti, la voglia passa 💪</h2>
+      <p class="hint">Di solito la voglia dura pochi minuti. Aspetta che finisca il tempo.</p>
+      <div class="timer" id="cravingTimer">5:00</div>
+      <p class="tip" id="cravingTip"></p>
+      <div class="dialog-actions column">
+        <button type="button" class="save" id="cravingWon">✓ Passata, ho resistito</button>
+        <button type="button" class="cancel" id="cravingLost">Ho fumato lo stesso</button>
+      </div>
+    </dialog>
     <script>
       const KEY = 'sigarette-v1';
       const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
@@ -169,11 +208,13 @@
       state.history = state.history && typeof state.history === 'object' ? state.history : {};
       const currentDay = today();
       if (state.date && state.date !== currentDay && Number.isFinite(Number(state.count))) {
-        state.history[state.date] = { count: Math.max(0, Number(state.count)), packPrice: Number(state.packPrice) || 5.60, packSize: Number(state.packSize) || 20, limit: Number(state.limit) || 20, before: Number(state.before) || 20, times: Array.isArray(state.times) ? state.times : [] };
+        state.history[state.date] = { count: Math.max(0, Number(state.count)), packPrice: Number(state.packPrice) || 5.60, packSize: Number(state.packSize) || 20, limit: Number.isFinite(Number(state.limit)) ? Number(state.limit) : 20, before: Number(state.before) || 20, times: Array.isArray(state.times) ? state.times : [], resisted: Number(state.resisted) || 0 };
       }
-      if (state.date !== currentDay) { state.date = currentDay; state.count = 0; state.times = []; }
+      if (state.date !== currentDay) { state.date = currentDay; state.count = 0; state.times = []; state.resisted = 0; }
       state.times = Array.isArray(state.times) ? state.times : [];
-      state.limit = Number(state.limit) > 0 ? Number(state.limit) : 20;
+      state.resisted = Number(state.resisted) || 0;
+      state.plan = state.plan && Number(state.plan.every) > 0 ? state.plan : null;
+      state.limit = Number.isFinite(Number(state.limit)) && state.limit !== null && Number(state.limit) >= 0 ? Number(state.limit) : 20;
       state.packPrice = Number(state.packPrice) > 0 ? Number(state.packPrice) : 5.60;
       state.packSize = Number(state.packSize) > 0 ? Number(state.packSize) : 20;
       state.before = Number(state.before) > 0 ? Number(state.before) : 20;
@@ -182,23 +223,60 @@
       const save = () => localStorage.setItem(KEY, JSON.stringify(state));
       const euro = (value) => Number(value).toLocaleString('it-IT', { style: 'currency', currency: 'EUR' });
       const dayLabel = (key) => new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(`${key}T12:00:00`));
-      const recordToday = () => { state.history[state.date] = { count: state.count, packPrice: state.packPrice, packSize: state.packSize, limit: state.limit, before: state.before, times: state.times }; };
+      const recordToday = () => { state.history[state.date] = { count: state.count, packPrice: state.packPrice, packSize: state.packSize, limit: state.limit, before: state.before, times: state.times, resisted: state.resisted }; };
       const dateKey = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
       const beforeOf = (row) => Number(row.before) > 0 ? Number(row.before) : state.before;
-      const limitOf = (row) => Number(row.limit) > 0 ? Number(row.limit) : state.limit;
+      const limitOf = (row) => row.limit !== undefined && row.limit !== null && Number.isFinite(Number(row.limit)) ? Number(row.limit) : state.limit;
+      // Piano per smettere: il limite scende di 1 ogni `every` giorni a partire da `start` il giorno `from`
+      const daysBetween = (a, b) => Math.round((new Date(`${b}T12:00:00`) - new Date(`${a}T12:00:00`)) / 86400000);
+      const addDays = (key, n) => { const d = new Date(`${key}T12:00:00`); d.setDate(d.getDate() + n); return dateKey(d); };
+      const shortDate = (key) => new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'long' }).format(new Date(`${key}T12:00:00`));
+      const planLimitOn = (plan, key) => Math.max(0, plan.start - Math.floor(Math.max(0, daysBetween(plan.from, key)) / plan.every));
+      const planZeroDate = (plan) => addDays(plan.from, plan.start * plan.every);
+      const planNextDrop = (plan, key) => addDays(plan.from, (Math.floor(Math.max(0, daysBetween(plan.from, key)) / plan.every) + 1) * plan.every);
+      const applyPlan = () => {
+        if (!state.plan) return '';
+        const next = planLimitOn(state.plan, state.date);
+        const msg = next < state.limit ? (next === 0 ? '🎯 Da oggi l\'obiettivo è zero sigarette!' : `📉 Da oggi il limite scende a ${next}.`) : '';
+        state.limit = next;
+        return msg;
+      };
+      const planMessage = applyPlan();
       const clock = (ms) => new Date(ms).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
       const timesText = (times) => Array.isArray(times) && times.length ? times.map(clock).join(' · ') : '';
       const sinceText = (ms) => { const min = Math.floor((Date.now() - ms) / 60000); if (min < 1) return 'meno di un minuto fa'; if (min < 60) return `${min} min fa`; const h = Math.floor(min / 60); return `${h} or${h === 1 ? 'a' : 'e'} e ${min % 60} min fa`; };
       const lastTime = () => state.times[state.times.length - 1] || [...Object.entries(state.history)].sort(([a], [b]) => b.localeCompare(a)).map(([, v]) => (v && v.times) || []).find(t => t.length)?.slice(-1)[0];
       const renderLast = () => {
         const last = lastTime();
-        if (!last) { $('last').innerHTML = 'Nessuna sigaretta registrata'; return; }
+        if (!last) { $('last').innerHTML = 'Nessuna sigaretta registrata'; renderHealth(null); return; }
         let text = `Ultima alle <strong>${clock(last)}</strong>${state.times.length ? '' : ' di ieri o prima'} · ${sinceText(last)}`;
         if (state.pause > 0) {
           const wait = Math.ceil((last + state.pause * 60000 - Date.now()) / 60000);
           text += wait > 0 ? `<br><span class="wait">⏳ Pausa: aspetta ancora ${wait >= 60 ? `${Math.floor(wait / 60)} h ${wait % 60} min` : `${wait} min`}</span>` : `<br><span class="ok">✓ Pausa di ${state.pause} min rispettata</span>`;
         }
         $('last').innerHTML = text;
+        renderHealth(last);
+      };
+      const HEAL = [
+        [20, 'Battito e pressione si abbassano'],
+        [8 * 60, 'L\'ossigeno nel sangue torna normale'],
+        [12 * 60, 'Il monossido di carbonio nel sangue torna normale'],
+        [48 * 60, 'Gusto e olfatto iniziano a migliorare'],
+        [72 * 60, 'Respirare diventa più facile'],
+        [14 * 1440, 'Circolazione e polmoni funzionano meglio'],
+        [30 * 1440, 'Meno tosse e meno fiato corto'],
+        [365 * 1440, 'Il rischio di infarto si dimezza']
+      ];
+      const duration = (min) => { if (min < 60) return `${min} min`; if (min < 1440) { const h = Math.floor(min / 60); return `${h} h${min % 60 ? ` ${min % 60} min` : ''}`; } const d = Math.floor(min / 1440); if (d >= 365) { const y = Math.floor(d / 365); return y === 1 ? '1 anno' : `${y} anni`; } if (d >= 30) { const m = Math.floor(d / 30); return m === 1 ? '1 mese' : `${m} mesi`; } if (d >= 14) { const w = Math.floor(d / 7); return `${w} settimane`; } return `${d} giorn${d === 1 ? 'o' : 'i'}`; };
+      const renderHealth = (last) => {
+        if (!last) { $('health').hidden = true; $('healBrief').textContent = ''; $('healRows').innerHTML = '<p class="hint">Comparirà dopo la prima sigaretta segnata.</p>'; return; }
+        const elapsed = (Date.now() - last) / 60000;
+        const done = HEAL.filter(([min]) => min <= elapsed).length;
+        const next = HEAL[done];
+        $('health').hidden = false;
+        $('health').innerHTML = next ? `🌱 Tra ${duration(Math.ceil(next[0] - elapsed))}: ${next[1].charAt(0).toLowerCase() + next[1].slice(1)} ›` : '🏆 Hai raggiunto tutti i traguardi! ›';
+        $('healBrief').textContent = `${done} su ${HEAL.length}`;
+        $('healRows').innerHTML = HEAL.map(([min, text], i) => `<div class="heal-row${i < done ? ' done' : i === done ? ' next' : ''}"><span>${i < done ? '✓' : i === done ? '⏳' : '○'}</span><span>${text}</span><span class="when">${i < done ? 'fatto' : i === done ? `tra ${duration(Math.ceil(min - elapsed))}` : `dopo ${duration(min)}`}</span></div>`).join('');
       };
       const renderWeek = () => {
         const days = [];
@@ -210,11 +288,16 @@
         const avg = known.length ? known.reduce((s, x) => s + x.count, 0) / known.length : 0;
         const within = known.filter(x => x.count <= x.limit).length;
         $('weekText').innerHTML = known.length ? `Media <strong>${avg.toLocaleString('it-IT', { maximumFractionDigits: 1 })}</strong> al giorno · limite rispettato <strong>${within} giorni su ${known.length}</strong>` : 'Ancora nessun dato.';
+        $('planText').hidden = !state.plan;
+        if (state.plan) {
+          const zero = planZeroDate(state.plan);
+          $('planText').innerHTML = state.limit === 0 ? '📉 Piano: obiettivo <strong>zero sigarette</strong> raggiunto. Tieni duro!' : `📉 Piano: scendi di 1 ogni ${state.plan.every === 7 ? 'settimana' : state.plan.every === 14 ? '2 settimane' : `${state.plan.every} giorni`}. Prossimo calo il <strong>${shortDate(planNextDrop(state.plan, state.date))}</strong> (a ${state.limit - 1}) · zero sigarette dal <strong>${shortDate(zero)}</strong>.`;
+        }
       };
       const historyEntry = (value) => typeof value === 'number' ? { count: value, packPrice: state.packPrice, packSize: state.packSize } : value;
-      const statsFor = (test) => Object.entries(state.history).filter(([date]) => test(date)).map(([date, value]) => ({ date, ...historyEntry(value) })).filter(row => Number.isFinite(Number(row.count))).reduce((total, row) => { const count = Math.max(0, Number(row.count)); const price = Number(row.packPrice) > 0 ? Number(row.packPrice) : state.packPrice; const size = Number(row.packSize) > 0 ? Number(row.packSize) : state.packSize; total.days++; total.smoked += count; total.less += beforeOf(row) - count; total.spent += count * price / size; total.baseline += beforeOf(row) * price / size; (row.times || []).forEach(ms => { const h = new Date(ms).getHours(); total.hours[h] = (total.hours[h] || 0) + 1; }); return total; }, { days: 0, smoked: 0, less: 0, spent: 0, baseline: 0, hours: {} });
+      const statsFor = (test) => Object.entries(state.history).filter(([date]) => test(date)).map(([date, value]) => ({ date, ...historyEntry(value) })).filter(row => Number.isFinite(Number(row.count))).reduce((total, row) => { const count = Math.max(0, Number(row.count)); const price = Number(row.packPrice) > 0 ? Number(row.packPrice) : state.packPrice; const size = Number(row.packSize) > 0 ? Number(row.packSize) : state.packSize; total.days++; total.smoked += count; total.resisted += Number(row.resisted) || 0; total.less += beforeOf(row) - count; total.spent += count * price / size; total.baseline += beforeOf(row) * price / size; (row.times || []).forEach(ms => { const h = new Date(ms).getHours(); total.hours[h] = (total.hours[h] || 0) + 1; }); return total; }, { days: 0, smoked: 0, less: 0, spent: 0, baseline: 0, hours: {}, resisted: 0 });
       const topHours = (hours) => Object.entries(hours).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([h, n]) => `${String(h).padStart(2, '0')}–${String((Number(h) + 1) % 24).padStart(2, '0')} (${n})`).join(' · ');
-      const summaryText = (label, stats) => stats.days ? `<summary>${label}<span class="brief">${stats.smoked} fumate · ${euro(stats.baseline - stats.spent)}</span></summary><p>Giorni registrati: <strong>${stats.days}</strong></p><p>Fumate: <strong>${stats.smoked}</strong> · ${stats.less >= 0 ? 'In meno' : 'In più'} rispetto a prima: <strong>${Math.abs(stats.less)}</strong></p><p>Spesa reale: <strong>${euro(stats.spent)}</strong> · Risparmio reale: <strong>${euro(stats.baseline - stats.spent)}</strong></p>${Object.keys(stats.hours).length ? `<p>Fasce orarie in cui fumi di più: <strong>${topHours(stats.hours)}</strong></p>` : ''}` : `<summary>${label}<span class="brief">nessun dato</span></summary><p>Nessun giorno registrato.</p>`;
+      const summaryText = (label, stats) => stats.days ? `<summary>${label}<span class="brief">${stats.smoked} fumate · ${euro(stats.baseline - stats.spent)}</span></summary><p>Giorni registrati: <strong>${stats.days}</strong></p><p>Fumate: <strong>${stats.smoked}</strong> · ${stats.less >= 0 ? 'In meno' : 'In più'} rispetto a prima: <strong>${Math.abs(stats.less)}</strong></p><p>Spesa reale: <strong>${euro(stats.spent)}</strong> · Risparmio reale: <strong>${euro(stats.baseline - stats.spent)}</strong></p>${stats.resisted ? `<p>Voglie superate: <strong>${stats.resisted}</strong> 💪</p>` : ''}${Object.keys(stats.hours).length ? `<p>Fasce orarie in cui fumi di più: <strong>${topHours(stats.hours)}</strong></p>` : ''}` : `<summary>${label}<span class="brief">nessun dato</span></summary><p>Nessun giorno registrato.</p>`;
       let audioContext;
       const beep = () => {
         try {
@@ -239,10 +322,11 @@
       };
       function render() {
         const left = state.limit - state.count;
-        const pct = Math.min(100, Math.max(0, state.count / state.limit * 100));
+        const pct = state.limit ? Math.min(100, Math.max(0, state.count / state.limit * 100)) : (state.count ? 100 : 0);
         $('date').textContent = new Intl.DateTimeFormat('it-IT', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
         $('count').innerHTML = `${state.count}<span> / ${state.limit}</span>`;
-        $('remaining').innerHTML = left > 0 ? `Te ne restano <strong>${left}</strong> per oggi` : left === 0 ? '<strong>Hai raggiunto il limite di oggi</strong>' : `<strong>Hai superato il limite di ${Math.abs(left)}</strong>`;
+        const status = state.limit === 0 && state.count === 0 ? '<strong>Obiettivo di oggi: zero sigarette</strong>' : left > 0 ? `Te ne restano <strong>${left}</strong> per oggi` : left === 0 ? '<strong>Hai raggiunto il limite di oggi</strong>' : `<strong>Hai superato il limite di ${Math.abs(left)}</strong>`;
+        $('remaining').innerHTML = status + (state.resisted ? ` · 💪 <strong>${state.resisted}</strong> ${state.resisted === 1 ? 'voglia superata' : 'voglie superate'}` : '');
         const todayCost = state.count * state.packPrice / state.packSize;
         const difference = (state.before - state.count) * state.packPrice / state.packSize;
         const differenceText = difference > 0 ? `risparmi <strong>${euro(difference * 30)}</strong> al mese` : difference < 0 ? `spendi <strong>${euro(Math.abs(difference) * 30)}</strong> in più al mese` : 'come prima';
@@ -276,14 +360,25 @@
         else $('message').textContent = '';
       });
       const backupInfo = () => { $('backupInfo').textContent = state.lastBackup ? `Ultima copia salvata il ${new Date(state.lastBackup).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' })}.` : 'Non hai ancora salvato una copia. Se cambi telefono o cancelli i dati del browser, senza copia perdi lo storico.'; };
-      $('settings').addEventListener('click', () => { $('limit').value = state.limit; $('before').value = state.before; $('pause').value = state.pause; $('packPrice').value = state.packPrice.toFixed(2); $('packSize').value = state.packSize; backupInfo(); $('dialog').showModal(); });
-      document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t === tab));
-        ['pageToday', 'pageHistory'].forEach(id => { $(id).hidden = id !== tab.dataset.page; });
-        window.scrollTo(0, 0);
-      }));
+      $('settings').addEventListener('click', () => { $('limit').value = state.limit; $('plan').value = String(state.plan ? state.plan.every : 0); planHint(); $('before').value = state.before; $('pause').value = state.pause; $('packPrice').value = state.packPrice.toFixed(2); $('packSize').value = state.packSize; backupInfo(); $('dialog').showModal(); });
+      document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => { showPage(tab.dataset.page); window.scrollTo(0, 0); }));
       $('cancelSettings').addEventListener('click', () => $('dialog').close());
-      $('settingsForm').addEventListener('submit', (event) => { event.preventDefault(); { const value = Math.max(1, Math.min(200, Number($('limit').value) || 20)); const price = Math.max(0.01, Math.min(100, Number($('packPrice').value) || 5.60)); const size = Math.max(1, Math.min(100, Number($('packSize').value) || 20)); state.limit = value; state.before = Math.max(1, Math.min(200, Number($('before').value) || 20)); state.pause = Math.max(0, Math.min(600, Math.round(Number($('pause').value) || 0))); state.packPrice = price; state.packSize = size; render(); $('dialog').close(); $('message').textContent = 'Impostazioni salvate.'; } });
+      const readNumber = (id, fallback, min, max) => { const raw = String($(id).value).trim().replace(',', '.'); const n = Number(raw); return raw !== '' && Number.isFinite(n) ? Math.max(min, Math.min(max, n)) : fallback; };
+      const planFromForm = () => {
+        const every = Number($('plan').value);
+        if (!every) return null;
+        const value = Math.round(readNumber('limit', state.limit, 0, 200));
+        if (state.plan && state.plan.every === every && value === state.limit) return state.plan;
+        return { every, start: value, from: today() };
+      };
+      const planHint = () => {
+        const plan = planFromForm();
+        const zero = plan ? new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(`${planZeroDate(plan)}T12:00:00`)) : '';
+        $('planHint').textContent = !plan ? 'Il limite resta quello scritto sopra.' : plan === state.plan ? (state.limit === 0 ? 'Piano in corso: obiettivo zero sigarette raggiunto.' : `Piano in corso: oggi il limite è ${state.limit} e arrivi a zero sigarette il ${zero}.`) : plan.start === 0 ? 'Obiettivo già a zero sigarette.' : `Parti da ${plan.start} al giorno (il limite scritto sopra) e arrivi a zero sigarette il ${zero}.`;
+      };
+      $('plan').addEventListener('change', planHint);
+      $('limit').addEventListener('input', planHint);
+      $('settingsForm').addEventListener('submit', (event) => { event.preventDefault(); { state.plan = planFromForm(); const value = Math.round(readNumber('limit', state.limit, 0, 200)); const price = Math.max(0.01, Math.min(100, Number($('packPrice').value) || 5.60)); const size = Math.max(1, Math.min(100, Number($('packSize').value) || 20)); state.limit = value; state.before = Math.max(1, Math.min(200, Number($('before').value) || 20)); state.pause = Math.max(0, Math.min(600, Math.round(Number($('pause').value) || 0))); state.packPrice = price; state.packSize = size; render(); $('dialog').close(); $('message').textContent = 'Impostazioni salvate.'; } });
       $('exportData').addEventListener('click', async () => {
         state.lastBackup = Date.now(); recordToday(); save();
         const name = `limite-sigarette-copia-${today()}.json`;
@@ -310,9 +405,63 @@
           location.reload();
         } catch (_) { alert('Questo file non è una copia valida di Limite sigarette.'); }
       });
-      document.addEventListener('visibilitychange', () => { renderLast(); if (state.date !== today()) { state.date = today(); state.count = 0; state.times = []; $('message').textContent = ''; render(); } });
+      const showPage = (page) => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.page === page));
+        ['pageToday', 'pageHistory'].forEach(id => { $(id).hidden = id !== page; });
+      };
+      const openHealth = () => { showPage('pageHistory'); $('healDetails').open = true; $('healDetails').scrollIntoView({ block: 'start' }); };
+      $('health').addEventListener('click', openHealth);
+      $('health').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openHealth(); } });
+      // Voglia: 5 minuti di attesa con consigli a rotazione
+      const TIPS = [
+        'Bevi un bicchiere d\'acqua fresca, a piccoli sorsi.',
+        'Fai 10 respiri lenti: inspira dal naso contando fino a 4, espira dalla bocca contando fino a 6.',
+        'Alzati e muoviti: fai due passi, anche solo per casa.',
+        'Tieni occupate le mani: lava una tazza, riordina qualcosa, scrivi a qualcuno.',
+        'Mastica una gomma o mangia un frutto.',
+        'Pensa a cosa farai con i soldi che stai risparmiando.',
+        'Cambia stanza o attività: la voglia è spesso legata al posto e al momento.'
+      ];
+      const CRAVING_MS = 5 * 60000;
+      let cravingEnd = 0, cravingTimer = null, cravingTip = 0, cravingDone = false;
+      const tickCraving = () => {
+        const left = Math.max(0, cravingEnd - Date.now());
+        const s = Math.ceil(left / 1000);
+        $('cravingTimer').textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+        const tipIndex = Math.floor((CRAVING_MS - left) / 25000);
+        if (tipIndex !== cravingTip && left > 0) { cravingTip = tipIndex; $('cravingTip').textContent = TIPS[tipIndex % TIPS.length]; }
+        if (left === 0 && !cravingDone) {
+          cravingDone = true;
+          $('cravingTip').textContent = '5 minuti superati! La voglia è passata?';
+          beep(); if (navigator.vibrate) navigator.vibrate([120, 60, 120]);
+        }
+      };
+      const stopCraving = () => { clearInterval(cravingTimer); cravingTimer = null; if ($('cravingDialog').open) $('cravingDialog').close(); };
+      $('craving').addEventListener('click', () => {
+        cravingEnd = Date.now() + CRAVING_MS; cravingTip = 0; cravingDone = false;
+        $('cravingTip').textContent = TIPS[Math.floor(Math.random() * TIPS.length)];
+        tickCraving(); cravingTimer = setInterval(tickCraving, 1000);
+        $('cravingDialog').showModal();
+      });
+      $('cravingWon').addEventListener('click', () => {
+        stopCraving(); state.resisted++; render();
+        $('message').textContent = `Ottimo! ${state.resisted === 1 ? 'Prima voglia superata oggi' : `${state.resisted} voglie superate oggi`} 💪`;
+      });
+      $('cravingLost').addEventListener('click', () => { stopCraving(); $('add').click(); });
+      $('cravingDialog').addEventListener('close', () => { clearInterval(cravingTimer); cravingTimer = null; });
+      const checkNewDay = () => {
+        if (state.date === today()) return;
+        recordToday();
+        state.date = today(); state.count = 0; state.times = []; state.resisted = 0;
+        const msg = applyPlan();
+        render();
+        $('message').textContent = msg;
+      };
+      document.addEventListener('visibilitychange', () => { renderLast(); checkNewDay(); if (cravingTimer) tickCraving(); });
+      setInterval(checkNewDay, 60000);
       if ('Notification' in window && Notification.permission === 'default') setTimeout(() => Notification.requestPermission().catch(() => {}), 1200);
       render();
+      if (planMessage) $('message').textContent = planMessage;
       if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
     </script>
   </body>

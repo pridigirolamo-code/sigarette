@@ -1,5 +1,5 @@
 // Alzare VERSIONE (e «Versione N» in index.html) a ogni modifica dell'app
-const VERSIONE = 13;
+const VERSIONE = 14;
 const CACHE = `limite-sigarette-v${VERSIONE}`;
 const FILES = ['./', './index.html', './manifest.webmanifest', './favicon.svg'];
 
