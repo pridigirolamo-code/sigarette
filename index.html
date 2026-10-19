@@ -37,7 +37,9 @@
       details.summary-card > summary::-webkit-details-marker { display: none; }
       details.summary-card > summary::after { content: '▾'; color: #94a3b8; transition: transform .2s; }
       details.summary-card[open] > summary::after { transform: rotate(180deg); }
-      details.summary-card > summary .brief { margin-left: auto; margin-right: 10px; font-weight: 500; color: #94a3b8; font-size: .9rem; }
+      details.summary-card > summary { flex-wrap: wrap; }
+      details.summary-card > summary::after { order: 2; margin-left: auto; }
+      details.summary-card > summary .brief { order: 3; flex-basis: 100%; margin-top: 3px; font-weight: 500; color: #94a3b8; font-size: .88rem; }
       details.summary-card[open] > summary { margin-bottom: 8px; }
       .craving-btn { border-color: #166534; color: #bbf7d0; }
       .health { margin: 6px 0 0; text-align: center; color: #86efac; font-size: .88rem; line-height: 1.35; cursor: pointer; }
@@ -149,7 +151,7 @@
         <details class="summary-card" id="monthSummary"></details>
         <details class="summary-card" id="yearSummary"></details>
         <details class="summary-card history"><summary>Ultimi giorni registrati</summary><div id="historyRows"></div></details>
-        <p class="tips">I dati restano solo sul telefono. Ogni nuovo giorno il conteggio riparte da zero.<br>Versione 14</p>
+        <p class="tips">I dati restano solo sul telefono. Ogni nuovo giorno il conteggio riparte da zero.<br>Versione 15</p>
       </section>
     </main>
     <nav class="tabs" aria-label="Sezioni">
@@ -287,7 +289,7 @@
         const known = days.filter(x => x.count !== null);
         const avg = known.length ? known.reduce((s, x) => s + x.count, 0) / known.length : 0;
         const within = known.filter(x => x.count <= x.limit).length;
-        $('weekText').innerHTML = known.length ? `Media <strong>${avg.toLocaleString('it-IT', { maximumFractionDigits: 1 })}</strong> al giorno · limite rispettato <strong>${within} giorni su ${known.length}</strong>` : 'Ancora nessun dato.';
+        $('weekText').innerHTML = known.length ? `Media <strong>${avg.toLocaleString('it-IT', { maximumFractionDigits: 1 })}</strong> al giorno · limite rispettato <strong>${within} ${within === 1 ? 'giorno' : 'giorni'} su ${known.length}</strong>` : 'Ancora nessun dato.';
         $('planText').hidden = !state.plan;
         if (state.plan) {
           const zero = planZeroDate(state.plan);
@@ -297,7 +299,7 @@
       const historyEntry = (value) => typeof value === 'number' ? { count: value, packPrice: state.packPrice, packSize: state.packSize } : value;
       const statsFor = (test) => Object.entries(state.history).filter(([date]) => test(date)).map(([date, value]) => ({ date, ...historyEntry(value) })).filter(row => Number.isFinite(Number(row.count))).reduce((total, row) => { const count = Math.max(0, Number(row.count)); const price = Number(row.packPrice) > 0 ? Number(row.packPrice) : state.packPrice; const size = Number(row.packSize) > 0 ? Number(row.packSize) : state.packSize; total.days++; total.smoked += count; total.resisted += Number(row.resisted) || 0; total.less += beforeOf(row) - count; total.spent += count * price / size; total.baseline += beforeOf(row) * price / size; (row.times || []).forEach(ms => { const h = new Date(ms).getHours(); total.hours[h] = (total.hours[h] || 0) + 1; }); return total; }, { days: 0, smoked: 0, less: 0, spent: 0, baseline: 0, hours: {}, resisted: 0 });
       const topHours = (hours) => Object.entries(hours).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([h, n]) => `${String(h).padStart(2, '0')}–${String((Number(h) + 1) % 24).padStart(2, '0')} (${n})`).join(' · ');
-      const summaryText = (label, stats) => stats.days ? `<summary>${label}<span class="brief">${stats.smoked} fumate · ${euro(stats.baseline - stats.spent)}</span></summary><p>Giorni registrati: <strong>${stats.days}</strong></p><p>Fumate: <strong>${stats.smoked}</strong> · ${stats.less >= 0 ? 'In meno' : 'In più'} rispetto a prima: <strong>${Math.abs(stats.less)}</strong></p><p>Spesa reale: <strong>${euro(stats.spent)}</strong> · Risparmio reale: <strong>${euro(stats.baseline - stats.spent)}</strong></p>${stats.resisted ? `<p>Voglie superate: <strong>${stats.resisted}</strong> 💪</p>` : ''}${Object.keys(stats.hours).length ? `<p>Fasce orarie in cui fumi di più: <strong>${topHours(stats.hours)}</strong></p>` : ''}` : `<summary>${label}<span class="brief">nessun dato</span></summary><p>Nessun giorno registrato.</p>`;
+      const summaryText = (label, stats) => stats.days ? `<summary>${label}<span class="brief">${stats.smoked} fumate · ${stats.baseline - stats.spent >= 0 ? `${euro(stats.baseline - stats.spent)} risparmiati` : `${euro(stats.spent - stats.baseline)} in più`}</span></summary><p>Giorni registrati: <strong>${stats.days}</strong></p><p>Fumate: <strong>${stats.smoked}</strong> · ${stats.less >= 0 ? 'In meno' : 'In più'} rispetto a prima: <strong>${Math.abs(stats.less)}</strong></p><p>Spesa reale: <strong>${euro(stats.spent)}</strong> · Risparmio reale: <strong>${euro(stats.baseline - stats.spent)}</strong></p>${stats.resisted ? `<p>Voglie superate: <strong>${stats.resisted}</strong> 💪</p>` : ''}${Object.keys(stats.hours).length ? `<p>Fasce orarie in cui fumi di più: <strong>${topHours(stats.hours)}</strong></p>` : ''}` : `<summary>${label}<span class="brief">nessun dato</span></summary><p>Nessun giorno registrato.</p>`;
       let audioContext;
       const beep = () => {
         try {
@@ -341,8 +343,12 @@
         renderWeek();
         const month = state.date.slice(0, 7);
         const year = state.date.slice(0, 4);
-        $('monthSummary').innerHTML = summaryText('Questo mese', statsFor(date => date.startsWith(month)));
-        $('yearSummary').innerHTML = summaryText('Quest’anno', statsFor(date => date.startsWith(year)));
+        const monthStats = statsFor(date => date.startsWith(month));
+        const yearStats = statsFor(date => date.startsWith(year));
+        $('monthSummary').innerHTML = summaryText('Questo mese', monthStats);
+        $('yearSummary').innerHTML = summaryText('Quest’anno', yearStats);
+        // Finché tutti i giorni dell'anno sono di questo mese, la riga dell'anno sarebbe un doppione
+        $('yearSummary').hidden = yearStats.days === monthStats.days;
         const rows = Object.entries(state.history).sort(([a], [b]) => b.localeCompare(a)).slice(0, 14);
         $('historyRows').innerHTML = rows.length ? rows.map(([date, value]) => { const row = historyEntry(value); const count = Number(row.count); const less = beforeOf(row) - count; const price = Number(row.packPrice) > 0 ? Number(row.packPrice) : state.packPrice; const size = Number(row.packSize) > 0 ? Number(row.packSize) : state.packSize; const spent = count * price / size; const saved = less * price / size; return `<div class="history-row"><span>${dayLabel(date)}<br>${count} fumate</span><span>${less >= 0 ? less + ' in meno' : Math.abs(less) + ' in più'}<br>${euro(spent)} spesi · ${euro(Math.abs(saved))} ${saved >= 0 ? 'risparmiati' : 'in più'}</span>${timesText(row.times) ? `<span class="times">🕒 ${timesText(row.times)}</span>` : ''}</div>`; }).join('') : '<p class="tips">Lo storico apparirà dal primo cambio di giorno.</p>';
         save();
